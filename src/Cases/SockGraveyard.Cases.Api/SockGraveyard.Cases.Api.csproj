@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SockGraveyard.ServiceDefaults\SockGraveyard.ServiceDefaults.csproj" />
-    <ProjectReference Include="..\Cases.Application\Cases.Application.csproj" />
-    <ProjectReference Include="..\Cases.Infrastructure\Cases.Infrastructure.csproj" />
+    <ProjectReference Include="..\SockGraveyard.Cases.Application\SockGraveyard.Cases.Application.csproj" />
+    <ProjectReference Include="..\SockGraveyard.Cases.Infrastructure\SockGraveyard.Cases.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

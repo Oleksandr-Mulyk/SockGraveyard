@@ -1,188 +1,298 @@
-﻿# Milestones
+﻿# Domain Model
 
-This document tracks the implementation progress of SockGraveyard.
+## Overview
 
-Each milestone represents a meaningful product increment that can be demonstrated independently.
+SockGraveyard is a fictional investigation platform dedicated to solving the global missing sock crisis.
+
+The domain is intentionally humorous, but the business rules, architecture, and modeling follow real production practices.
+
+The primary objective is simple:
+
+```text
+A sock disappears
+↓
+A case is opened
+↓
+A detective investigates
+↓
+A matching sock is found
+↓
+The case is closed
+```
 
 ---
 
-# Milestone 1
-## The Investigation Department Opens
+# Ubiquitous Language
 
-### Goal
+The following terms must be used consistently across the entire solution.
 
-Launch the first operational service.
+| Term | Meaning |
+|--------|---------|
+| Sock Case | Investigation of a missing sock |
+| Sock Profile | Structured description of a sock |
+| Found Sock | Recovered sock stored in inventory |
+| Match | Potential pairing between a missing and found sock |
+| Detective | User responsible for investigations |
+| Citizen | User reporting a missing sock |
+| Admin | Department administrator |
+| Reward | Compensation for information leading to sock recovery |
+| Investigation | Active work on a sock case |
 
-### Services
+---
+
+# Bounded Contexts
+
+## Cases Context
+
+Responsible for investigation workflow.
+
+### Owns
 
 ```text
-Cases
-PostgreSQL
-AppHost
-ServiceDefaults
+SockCase
+SockMatch
+CaseStatus
 ```
 
-### Features
+---
 
-- Create case
-- View case
-- List cases
-- Start investigation
-- Close as unsolved
+## Catalog Context
 
-### Deliverables
+Responsible for describing socks.
 
-- Aspire orchestration
-- PostgreSQL integration
-- EF Core migrations
-- Swagger
-- Health Checks
-- Serilog logging
-- Integration tests
-
-### Success Criteria
-
-A missing sock case can complete its basic lifecycle.
-
-### Demo
+### Owns
 
 ```text
-Create Case
+SockProfile
+Color
+Pattern
+Material
+Size
+```
+
+---
+
+## Inventory Context
+
+Responsible for recovered socks.
+
+### Owns
+
+```text
+FoundSock
+Reservations
+Inventory Matching Requests
+```
+
+---
+
+## Auth Context
+
+Responsible for identity.
+
+### Owns
+
+```text
+Users
+Roles
+Permissions
+Refresh Tokens
+```
+
+---
+
+## Notifications Context
+
+Responsible for user communication.
+
+### Owns
+
+```text
+Notification
+Notification History
+Realtime Delivery
+```
+
+---
+
+## Reports Context
+
+Responsible for analytics.
+
+### Owns
+
+```text
+Daily Statistics
+Read Models
+Aggregates
+```
+
+---
+
+## Rewards Context
+
+Responsible for reward processing.
+
+### Owns
+
+```text
+Rewards
+Payment Status
+Reward History
+```
+
+---
+
+# Aggregates
+
+---
+
+# SockCase
+
+The central aggregate of the system.
+
+Represents an investigation.
+
+---
+
+## Properties
+
+```csharp
+Id
+CaseNumber
+CatalogItemId
+ReportedByUserId
+LastKnownLocation
+Status
+CreatedAtUtc
+ClosedAtUtc
+```
+
+---
+
+## Responsibilities
+
+```text
+Track investigation state
+
+Start investigation
+
+Accept match confirmation
+
+Close investigation
+
+Maintain invariants
+```
+
+---
+
+## Invariants
+
+A case:
+
+```text
+Must have a sock profile
+```
+
+---
+
+A case:
+
+```text
+Must start in Reported status
+```
+
+---
+
+A closed case:
+
+```text
+Cannot be reopened
+```
+
+---
+
+A matched case:
+
+```text
+Cannot have more than one active match
+```
+
+---
+
+# Case Status
+
+---
+
+## Reported
+
+A citizen reported a missing sock.
+
+```text
+Initial State
+```
+
+---
+
+## Investigating
+
+A detective accepted the case.
+
+```text
+Under Investigation
+```
+
+---
+
+## Matched
+
+A potential matching sock has been identified.
+
+```text
+Awaiting Confirmation
+```
+
+---
+
+## Closed
+
+The sock has been successfully recovered.
+
+```text
+Solved
+```
+
+---
+
+## ClosedUnsolved
+
+The investigation ended without success.
+
+```text
+Unsolved
+```
+
+---
+
+# Allowed Transitions
+
+```text
+Reported
 ↓
 Investigating
-↓
-ClosedUnsolved
 ```
 
 ---
 
-# Milestone 2
-## The Sock Identification Bureau
-
-### Goal
-
-Introduce structured sock descriptions.
-
-### Services
-
 ```text
-Catalog
-```
-
-### Features
-
-- Create sock profiles
-- Manage colors
-- Manage patterns
-- Manage materials
-- Manage sizes
-
-### Deliverables
-
-- Catalog database
-- Catalog API
-- Catalog tests
-
-### Success Criteria
-
-Cases reference catalog entries instead of free-text descriptions.
-
-### Demo
-
-```text
-Blue
-Striped
-M
-Cotton
-```
-
----
-
-# Milestone 3
-## The Lost Sock Warehouse
-
-### Goal
-
-Introduce recovered sock inventory.
-
-### Services
-
-```text
-Inventory
-```
-
-### Features
-
-- Register recovered socks
-- Manage inventory
-- Inventory lookup
-
-### Technologies
-
-```text
-gRPC
-```
-
-### Deliverables
-
-- Inventory API
-- Inventory database
-- gRPC service
-- Service discovery
-
-### Success Criteria
-
-Cases can communicate with Inventory.
-
-### Demo
-
-```text
-Cases
+Investigating
 ↓
-gRPC
-↓
-Inventory
-```
-
----
-
-# Milestone 4
-## The First Solved Mystery
-
-### Goal
-
-Implement automatic matching.
-
-### Features
-
-- Matching engine
-- Match score
-- Match confirmation
-- Inventory reservation
-
-### New Status
-
-```text
 Matched
 ```
 
-### Deliverables
-
-- Matching service
-- Match workflow
-- State machine updates
-
-### Success Criteria
-
-A missing sock can be matched with a recovered sock.
-
-### Demo
+---
 
 ```text
-Case
-↓
-Search Match
-↓
 Matched
 ↓
 Closed
@@ -190,32 +300,293 @@ Closed
 
 ---
 
-# Milestone 5
-## The Precinct Gets Real-Time Communication
-
-### Goal
-
-Introduce live notifications.
-
-### Services
-
 ```text
-Notifications
+Investigating
+↓
+ClosedUnsolved
 ```
 
-### Technologies
+---
+
+# Forbidden Transitions
 
 ```text
-SignalR
+Closed
+↓
+Anything
 ```
 
-### Features
+---
 
-- Realtime updates
-- Notification history
-- Live broadcasts
+```text
+ClosedUnsolved
+↓
+Anything
+```
 
-### Notification Types
+---
+
+```text
+Reported
+↓
+Closed
+```
+
+---
+
+```text
+Reported
+↓
+Matched
+```
+
+---
+
+# SockProfile
+
+Defines what a sock looks like.
+
+---
+
+## Properties
+
+```csharp
+Id
+Name
+Color
+Pattern
+Size
+Material
+Notes
+```
+
+---
+
+## Example
+
+```text
+Blue Athletic Sock
+
+Color: Blue
+Pattern: Striped
+Material: Cotton
+Size: M
+```
+
+---
+
+# FoundSock
+
+Represents an unpaired recovered sock.
+
+---
+
+## Properties
+
+```csharp
+Id
+CatalogItemId
+FoundLocation
+FoundAtUtc
+Reserved
+```
+
+---
+
+## Rules
+
+A found sock can be:
+
+```text
+Available
+```
+
+or
+
+```text
+Reserved
+```
+
+---
+
+Reserved socks:
+
+```text
+Cannot be matched to another case
+```
+
+---
+
+# SockMatch
+
+Represents a possible recovery result.
+
+---
+
+## Properties
+
+```csharp
+Id
+CaseId
+FoundSockId
+Confidence
+CreatedAtUtc
+Confirmed
+```
+
+---
+
+## Confidence
+
+Range:
+
+```text
+0.0 - 1.0
+```
+
+---
+
+Examples:
+
+```text
+1.0 = Exact Match
+```
+
+---
+
+```text
+0.85 = Strong Match
+```
+
+---
+
+```text
+0.50 = Weak Match
+```
+
+---
+
+# Matching Rules
+
+Version 1:
+
+```text
+Color matches
+AND
+Pattern matches
+AND
+Size matches
+AND
+Material matches
+```
+
+↓
+
+```text
+Confidence = 1.0
+```
+
+---
+
+Otherwise:
+
+```text
+Confidence = 0
+```
+
+---
+
+Future versions may support weighted scoring.
+
+---
+
+# ApplicationUser
+
+Represents a person interacting with the department.
+
+---
+
+## Properties
+
+```csharp
+Id
+Email
+DisplayName
+CreatedAtUtc
+```
+
+---
+
+# Roles
+
+## Citizen
+
+Can:
+
+```text
+Create cases
+
+View own cases
+```
+
+Cannot:
+
+```text
+Investigate
+Close cases
+Confirm matches
+```
+
+---
+
+## Detective
+
+Can:
+
+```text
+Investigate cases
+
+Search matches
+
+Confirm matches
+
+Close investigations
+```
+
+---
+
+## Admin
+
+Can:
+
+```text
+Manage users
+
+Manage roles
+
+Access all investigations
+```
+
+---
+
+# Notification
+
+Represents information delivered to users.
+
+---
+
+## Properties
+
+```csharp
+Id
+Type
+Message
+CreatedAtUtc
+```
+
+---
+
+## Types
 
 ```text
 CaseCreated
@@ -223,290 +594,129 @@ InvestigationStarted
 MatchFound
 CaseClosed
 CaseClosedUnsolved
-```
-
-### Success Criteria
-
-Users receive updates instantly.
-
-### Demo
-
-```text
-Create Case
-↓
-SignalR
-↓
-Notification Appears
+RewardIssued
 ```
 
 ---
 
-# Milestone 6
-## Event-Driven Investigations
+# Reward
 
-### Goal
+Represents compensation for successfully identifying a missing sock.
 
-Introduce asynchronous communication.
+---
 
-### Technologies
+## Properties
 
-```text
-RabbitMQ
-MassTransit
-```
-
-### New Project
-
-```text
-Contracts
-```
-
-### Events
-
-```text
-CaseReported
-InvestigationStarted
-MatchFound
-CaseClosed
-CaseClosedUnsolved
-```
-
-### Deliverables
-
-- RabbitMQ
-- Consumers
-- Retry policies
-- Dead Letter Queue
-
-### Success Criteria
-
-Services communicate through events.
-
-### Demo
-
-```text
-Cases
-↓
-Publish Event
-↓
-RabbitMQ
-↓
-Notifications
+```csharp
+Id
+CaseId
+Amount
+Status
+CreatedAtUtc
 ```
 
 ---
 
-# Milestone 7
-## Detective Authentication System
+# Reward Status
 
-### Goal
+## Pending
 
-Secure the department.
+Created.
 
-### Services
+---
 
-```text
-Auth
-```
+## Processing
 
-### Technologies
+Payment started.
 
-```text
-Identity
-JWT
-Refresh Tokens
-```
+---
 
-### Roles
+## Completed
 
-```text
-Citizen
-Detective
-Admin
-```
+Payment succeeded.
 
-### Features
+---
 
-- Registration
-- Login
-- Refresh tokens
-- Role management
+## Failed
 
-### Success Criteria
+Payment failed.
 
-Authorization protects the platform.
+---
 
-### Demo
+# Domain Events
+
+Domain events are facts that happened.
+
+---
+
+## CaseReported
 
 ```text
-Citizen
-↓
-Create Case
-
-Detective
-↓
-Investigate Case
+A new investigation has been opened.
 ```
 
 ---
 
-# Milestone 8
-## Detective Workstation
-
-### Goal
-
-Provide a desktop experience.
-
-### Services
+## InvestigationStarted
 
 ```text
-DetectiveDashboard
-```
-
-### Technologies
-
-```text
-Avalonia
-MVVM
-SignalR Client
-```
-
-### Screens
-
-```text
-Login
-Cases
-Case Details
-Notifications
-Analytics
-```
-
-### Success Criteria
-
-A detective can perform investigations without Swagger.
-
-### Demo
-
-```text
-Login
-↓
-Open Case
-↓
-Investigate
-↓
-Confirm Match
-↓
-Close Case
+A detective started working on a case.
 ```
 
 ---
 
-# Milestone 9
-## Intelligence & Analytics Bureau
-
-### Goal
-
-Provide department reporting.
-
-### Services
+## MatchFound
 
 ```text
-Reports
-```
-
-### Technologies
-
-```text
-Hangfire
-Read Models
-Event Consumers
-```
-
-### Analytics
-
-```text
-Resolution Rate
-Top Missing Colors
-Most Dangerous Locations
-Average Investigation Time
-```
-
-### Deliverables
-
-- Scheduled jobs
-- Statistics API
-- Dashboard analytics
-
-### Success Criteria
-
-Management can evaluate department performance.
-
-### Demo
-
-```text
-Reports
-↓
-Charts
-↓
-Trends
-↓
-Insights
+A potential sock pair was identified.
 ```
 
 ---
 
-# Milestone 10
-## Production Release
-
-### Goal
-
-Complete the platform.
-
-### Services
+## MatchConfirmed
 
 ```text
-Gateway
-Rewards
+A detective approved the match.
 ```
 
-### Technologies
+---
+
+## CaseClosed
 
 ```text
-YARP
-Polly
-Stripe Sandbox
-Rate Limiting
-Circuit Breaker
+The mystery has been solved.
 ```
 
-### Features
+---
 
-- API Gateway
-- Reward processing
-- Resilience policies
-- Centralized routing
-
-### Deliverables
-
-- YARP gateway
-- Polly retry policies
-- Rewards workflow
-- Full tracing
-
-### Success Criteria
-
-Entire platform works as a production-style distributed system.
-
-### Demo
+## CaseClosedUnsolved
 
 ```text
-Citizen Reports Sock
+The mystery remains unsolved.
+```
+
+---
+
+## RewardIssued
+
+```text
+A reward was processed.
+```
+
+---
+
+# Core Business Workflow
+
+## Happy Path
+
+```text
+Citizen Reports Missing Sock
 ↓
 Case Created
 ↓
-Detective Investigates
+Detective Starts Investigation
 ↓
-Inventory Match Found
+Inventory Finds Match
 ↓
 Match Confirmed
 ↓
@@ -516,98 +726,93 @@ Case Closed
 ↓
 Reports Updated
 ↓
-Real-Time Notifications Sent
+Notification Sent
 ```
 
 ---
 
-# Release Roadmap
-
-## Phase 1
-Core Investigation System
+## Unsolved Path
 
 ```text
-Milestone 1
-Milestone 2
-Milestone 3
-Milestone 4
-```
-
-Result:
-
-```text
-A missing sock can be reported,
-investigated,
-matched,
-and closed.
+Citizen Reports Missing Sock
+↓
+Investigation Started
+↓
+No Matches Found
+↓
+Case ClosedUnsolved
+↓
+Reports Updated
+↓
+Notification Sent
 ```
 
 ---
 
-## Phase 2
-Real-Time Microservices
+# Domain Rules
+
+## Rule 1
+
+Every investigation must reference exactly one sock profile.
+
+---
+
+## Rule 2
+
+Every match must reference exactly one case and one recovered sock.
+
+---
+
+## Rule 3
+
+A recovered sock can participate in only one active match.
+
+---
+
+## Rule 4
+
+A reward can only be issued for a confirmed match.
+
+---
+
+## Rule 5
+
+Only detectives may confirm a match.
+
+---
+
+## Rule 6
+
+Only detectives may close a case.
+
+---
+
+## Rule 7
+
+Every case must eventually end in either:
 
 ```text
-Milestone 5
-Milestone 6
+Closed
 ```
 
-Result:
+or
 
 ```text
-Realtime event-driven architecture.
+ClosedUnsolved
 ```
 
 ---
 
-## Phase 3
-Security & User Experience
+# Success Definition
+
+A case is considered successfully resolved when:
 
 ```text
-Milestone 7
-Milestone 8
+Match Found
+AND
+Match Confirmed
+AND
+Case Closed
 ```
 
-Result:
-
-```text
-Authenticated users
-and a real desktop application.
-```
-
----
-
-## Phase 4
-Production Features
-
-```text
-Milestone 9
-Milestone 10
-```
-
-Result:
-
-```text
-A complete production-style platform.
-```
-
----
-
-# Project Completion Definition
-
-SockGraveyard is considered complete when:
-
-- Citizens can report missing socks.
-- Detectives can investigate cases.
-- Inventory can track recovered socks.
-- Matching engine can identify potential pairs.
-- Notifications are delivered in real time.
-- Events flow through RabbitMQ.
-- Users authenticate using JWT.
-- Dashboard supports full workflows.
-- Reports generate operational analytics.
-- Rewards are processed.
-- Gateway exposes a single public entry point.
-- OpenTelemetry provides full distributed tracing.
-
-At this point the mystery of disappearing socks can finally be solved.
+At that point the missing sock has officially escaped the Sock Graveyard.

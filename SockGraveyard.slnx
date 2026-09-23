@@ -1,4 +1,7 @@
 <Solution>
-  <Project Path="SockGraveyard.AppHost/SockGraveyard.AppHost.csproj" />
-  <Project Path="SockGraveyard.ServiceDefaults/SockGraveyard.ServiceDefaults.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/SockGraveyard.AppHost/SockGraveyard.AppHost.csproj" />
+    <Project Path="src/SockGraveyard.ServiceDefaults/SockGraveyard.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
 </Solution>

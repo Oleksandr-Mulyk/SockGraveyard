@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/docs/">
+    <File Path="docs/architecture.md" />
+    <File Path="docs/domain.md" />
+    <File Path="docs/milestones.md" />
+    <File Path="docs/roadmap.md" />
+  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
   </Folder>

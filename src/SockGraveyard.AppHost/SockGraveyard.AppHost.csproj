@@ -9,4 +9,8 @@
     <UserSecretsId>3081fbf3-3455-4e2d-95e9-84fc0886e3e1</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cases\SockGraveyard.Cases.Api\SockGraveyard.Cases.Api.csproj" />
+  </ItemGroup>
+
 </Project>

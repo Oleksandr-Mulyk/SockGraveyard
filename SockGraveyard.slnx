@@ -12,5 +12,13 @@
     <Project Path="src/SockGraveyard.AppHost/SockGraveyard.AppHost.csproj" />
     <Project Path="src/SockGraveyard.ServiceDefaults/SockGraveyard.ServiceDefaults.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/src/Cases/">
+    <Project Path="src/Cases/Cases.Application/Cases.Application.csproj" Id="65bd05e8-42ef-4b5c-ab5a-8f96b88942a7" />
+    <Project Path="src/Cases/Cases.Domain/Cases.Domain.csproj" Id="b6410ece-28b7-4f6a-9ab4-c61bf28f11f1" />
+    <Project Path="src/Cases/Cases.Infrastructure/Cases.Infrastructure.csproj" Id="987abf24-b895-42dd-ac04-7dbc757c4d50" />
+    <Project Path="src/Cases/SockGraveyard.Cases.Api/SockGraveyard.Cases.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SockGraveyard.Cases.Tests/SockGraveyard.Cases.Tests.csproj" Id="6cc1e509-1080-4eee-89bc-ddb3aabc58e0" />
+  </Folder>
 </Solution>
